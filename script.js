@@ -150,7 +150,7 @@ async function processMultipleFiles(files) {
         processedFilesCount = 0;
         
         const totalFiles = pdfFiles.length;
-        showNotification(`开始处理 ${totalFiles} 个PDF文件...`, 'info');
+        showNotification(`🚀 开始处理 ${totalFiles} 个PDF文件...`, 'info');
         
         // 加载qpdf模块
         const mod = await loadQpdfModule();
@@ -158,7 +158,29 @@ async function processMultipleFiles(files) {
         // 逐个处理文件
         for (const file of pdfFiles) {
             console.log(`📁 开始处理文件: ${file.name}`);
-            showNotification(`正在处理文件: ${file.name} (${processedFilesCount + 1}/${totalFiles})`, 'info');
+            
+            // 显示更明显的处理中提示
+            showNotification(`⏳ 正在处理文件: ${file.name}`, 'info', 5000);
+            
+            // 更新上传区域的处理状态文本
+            const processingText = document.createElement('div');
+            processingText.className = 'processing-text';
+            processingText.style.cssText = `
+                position: absolute;
+                top: 70%;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--text-secondary);
+                z-index: 10;
+                background-color: var(--bg-primary);
+                padding: 0.25rem 0.75rem;
+                border-radius: var(--radius-md);
+                box-shadow: var(--shadow-md);
+            `;
+            processingText.textContent = `${processedFilesCount + 1}/${totalFiles}`;
+            uploadArea.appendChild(processingText);
             
             // 移除密码
             const processedBlob = await removeOwnerPassword(mod, file);
@@ -167,7 +189,12 @@ async function processMultipleFiles(files) {
             downloadFile(processedBlob, file.name);
             
             processedFilesCount++;
+            
+            // 移除处理状态文本
+            processingText.remove();
+            
             console.log(`✅ 文件处理完成: ${file.name}`);
+            showNotification(`✅ 文件处理完成: ${file.name}`, 'success', 2000);
         }
         
         showNotification(`✅ 所有 ${totalFiles} 个PDF文件处理完成！`, 'success');
@@ -335,7 +362,7 @@ function handleDragLeave(event) {
 }
 
 // 通知系统
-function showNotification(message, type = 'info') {
+function showNotification(message, type = 'info', duration = 3000) {
     // 创建通知元素
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
@@ -346,33 +373,47 @@ function showNotification(message, type = 'info') {
         position: fixed;
         top: 20px;
         right: 20px;
-        padding: 12px 20px;
-        border-radius: 8px;
+        padding: 14px 24px;
+        border-radius: 10px;
         color: white;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 0.95rem;
         z-index: 1000;
-        animation: slideIn 0.3s ease;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
     `;
     
-    // 根据类型设置背景颜色
-    const colors = {
-        success: '#10b981',
-        error: '#ef4444',
-        info: '#3b82f6'
+    // 根据类型设置背景颜色和图标
+    const types = {
+        success: { color: '#10b981', icon: '✅' },
+        error: { color: '#ef4444', icon: '❌' },
+        info: { color: '#3b82f6', icon: 'ℹ️' }
     };
-    notification.style.backgroundColor = colors[type] || colors.info;
+    
+    const config = types[type] || types.info;
+    notification.style.backgroundColor = config.color;
+    notification.innerHTML = `${config.icon} ${message}`;
     
     // 添加到文档
     document.body.appendChild(notification);
     
-    // 3秒后移除
+    // 显示通知
     setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
+        notification.style.transform = 'translateX(0)';
+        notification.style.opacity = '1';
+    }, 100);
+    
+    // 自动移除
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        notification.style.opacity = '0';
         setTimeout(() => {
             notification.remove();
-        }, 300);
-    }, 3000);
+        }, 400);
+    }, duration);
 }
 
 // 添加通知动画样式
