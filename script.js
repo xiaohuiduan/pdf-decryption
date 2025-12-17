@@ -306,6 +306,10 @@ async function removeOwnerPassword(mod, file) {
 // 下载文件功能
 function downloadFile(blob, originalFilename) {
     try {
+        // 显示下载中提示
+        const downloadId = Date.now();
+        showNotification(`📥 正在准备下载文件: ${originalFilename}`, 'info', 5000);
+        
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         
@@ -317,13 +321,62 @@ function downloadFile(blob, originalFilename) {
         
         // 添加到文档并点击
         document.body.appendChild(a);
+        
+        // 创建下载进度元素
+        const downloadProgress = document.createElement('div');
+        downloadProgress.className = 'download-progress';
+        downloadProgress.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        downloadProgress.innerHTML = `
+            <div class="spinner" style="
+                width: 16px;
+                height: 16px;
+                border: 2px solid var(--bg-tertiary);
+                border-top-color: var(--accent-primary);
+                border-radius: 50%;
+                animation: spin 0.8s linear infinite;
+            "></div>
+            <span>正在下载: ${filename}</span>
+        `;
+        
+        document.body.appendChild(downloadProgress);
+        
+        // 触发下载
         a.click();
         
-        // 清理
+        // 下载完成后清理
         setTimeout(() => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        }, 100);
+            
+            // 更新提示为下载完成
+            downloadProgress.innerHTML = `
+                <span style="color: #10b981; font-weight: 600;">✅</span>
+                <span>下载完成: ${filename}</span>
+            `;
+            
+            // 3秒后移除下载进度提示
+            setTimeout(() => {
+                downloadProgress.remove();
+            }, 3000);
+            
+            // 显示下载完成通知
+            showNotification(`✅ 文件下载完成: ${filename}`, 'success', 4000);
+        }, 500);
         
     } catch (error) {
         console.error('❌ 下载文件时出错:', error);
