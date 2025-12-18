@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pdf.weno.info/sitemap.xml
+
+# 禁止抓取的目录
+Disallow: /node_modules/
+Disallow: /dist/
+
+# 禁止抓取的文件类型
+Disallow: /*.log$
+Disallow: /*.tmp$

@@ -108,6 +108,96 @@ body {
     transform: rotate(180deg);
 }
 
+/* Language Selector Styles */
+.language-selector {
+    position: relative;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.language-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.language-btn:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.language-icon {
+    transition: transform 0.2s ease;
+}
+
+.language-btn:hover .language-icon {
+    transform: rotate(180deg);
+}
+
+.language-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.25rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    min-width: 140px;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.language-selector.active .language-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.language-option {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    text-align: left;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    display: block;
+}
+
+.language-option:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--accent-primary);
+    padding-left: 1.25rem;
+}
+
+.language-option.active {
+    background-color: var(--accent-primary);
+    color: white;
+    font-weight: 600;
+}
+
 /* Main Content */
 .main {
     padding: 3rem 0;
